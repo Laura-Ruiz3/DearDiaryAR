@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7019086503295992057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9021121527559923484}
+  - component: {fileID: 1942910126838887512}
+  - component: {fileID: 1354341428832841048}
+  m_Layer: 0
+  m_Name: Narration
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9021121527559923484
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7019086503295992057}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1181.374, y: 764.2632, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1942910126838887512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7019086503295992057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bb6efbf97d9b734b85aa17c7c49c13c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  continueModels: []
+  textBoxItem: {fileID: 0}
+  textTemplate: {fileID: 0}
+  skipButton: {fileID: 0}
+  continueButton: {fileID: 0}
+  textBox: {fileID: 0}
+  backgroundPanel: {fileID: 0}
+  audioSource: {fileID: 0}
+  clips:
+  - {fileID: 8300000, guid: e124182cbe0458e42921461d8a8c5088, type: 3}
+  - {fileID: 8300000, guid: d316277e8b753bd4283583a9e1cc56fb, type: 3}
+  - {fileID: 8300000, guid: c6b988482781ab54990730c8d713d5ce, type: 3}
+  - {fileID: 8300000, guid: ef43c184faf289c4db06f3267ac3c39f, type: 3}
+  - {fileID: 8300000, guid: f16b26aa66bad584faa941170e110a54, type: 3}
+  - {fileID: 8300000, guid: bf1162165d7317e439ae2001f6b1b2d9, type: 3}
+  icons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  tempIcon: {fileID: 0}
+  erasedTextTemplate: {fileID: 0}
+  creepyTextTemplate: {fileID: 0}
+  tempColor: {fileID: 0}
+  delay: 0.05
+  markerDetected: 0
+--- !u!114 &1354341428832841048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7019086503295992057}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd349dfca29e724c9e10d84dcd45c15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textBoxContainer: {fileID: 0}
+  textTemplate: {fileID: 0}
+  skipButton: {fileID: 0}
+  textBox: {fileID: 0}
+  backgroundPanel: {fileID: 0}
+  audioSource: {fileID: 0}
+  clips:
+  - {fileID: 8300000, guid: e124182cbe0458e42921461d8a8c5088, type: 3}
+  - {fileID: 8300000, guid: d316277e8b753bd4283583a9e1cc56fb, type: 3}
+  - {fileID: 8300000, guid: c6b988482781ab54990730c8d713d5ce, type: 3}
+  - {fileID: 8300000, guid: ef43c184faf289c4db06f3267ac3c39f, type: 3}
+  - {fileID: 8300000, guid: f16b26aa66bad584faa941170e110a54, type: 3}
+  - {fileID: 8300000, guid: bf1162165d7317e439ae2001f6b1b2d9, type: 3}
+  icons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  tempIcon: {fileID: 0}
+  erasedTextTemplate: {fileID: 0}
+  creepyTextTemplate: {fileID: 0}
+  tempColor: {fileID: 0}
+  delay: 0.05

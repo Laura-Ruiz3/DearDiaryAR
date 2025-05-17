@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+  <Tracking>
+    <ImageTarget name="pag05" size="1.000000 0.779343" />
+    <ImageTarget name="pag04" size="1.000000 1.954984" />
+    <ImageTarget name="pag03" size="1.000000 0.828063" />
+    <ImageTarget name="pag02" size="1.000000 0.942693" />
+    <ImageTarget name="pag01" size="1.000000 1.064220" />
+  </Tracking>
+</QCARConfig>
