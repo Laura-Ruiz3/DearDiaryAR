@@ -7,18 +7,17 @@ public class Fade : MonoBehaviour
 {
     public static Fade Instance;
 
-    public Image fadeImage;
-    public CanvasGroup uiCanvasGroup;
-    public string sceneName; // Ahora se puede asignar desde el Inspector
-    public float fadeDuration = 1f;
-    public AudioSource effect;
+    public Image fadeImage; //Imagen que se le aplicará el efecto de fade
+    public CanvasGroup uiCanvasGroup; //Canvas donde se encuentra la imagen
+    public string sceneName; // Indica la siguiente escena a reproduci después del efecto
+    public float fadeDuration = 1f; //Duración del efecto
+    public AudioSource effect; //Efecto al pasar de escena
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -29,19 +28,20 @@ public class Fade : MonoBehaviour
 
     private void Start()
     {
+        //Establece la imagen como opaca
         Color c = fadeImage.color;
         c.a = 1f;
         fadeImage.color = c;
-
         StartCoroutine(FadeIn());
     }
 
-    // Nuevo método para cambiar a la escena indicada en el inspector
+    // Cambia la escena indicada en el inspector
     public void ChangeSceneFromInspector()
     {
         ChangeScene(sceneName);
     }
 
+    //Hace el cambio de escena
     public void ChangeScene(string newSceneName)
     {
         effect.Play();
@@ -49,11 +49,13 @@ public class Fade : MonoBehaviour
         StartCoroutine(WaitThenFadeOut(newSceneName));
     }
 
+    //Llama a la corrutina que hace el effecto de fade out
     IEnumerator WaitThenFadeOut(string sceneToLoad)
     {
         yield return StartCoroutine(FadeOut(sceneToLoad));
     }
 
+    //Corrutina que hace efecto de fade in a la escena. Aumenta la opacidad de la imagen.
     IEnumerator FadeIn()
     {
         float t = 0;
@@ -86,6 +88,11 @@ public class Fade : MonoBehaviour
             uiCanvasGroup.alpha = 1f;
     }
 
+    /*Corrutina que hace efecto de fade out a la escena. Disminuye la opacidad de la imagen.
+     * 
+     *Args:
+     *  sceneToLoad: escena a la cual cambiará
+     */
     IEnumerator FadeOut(string sceneToLoad)
     {
         float t = 0f;

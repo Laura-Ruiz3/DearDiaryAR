@@ -3,12 +3,12 @@ using TMPro;
 
 public class TextShakeEffect : MonoBehaviour
 {
-    public float shakeAmount = 1.0f;
-    public float shakeSpeed = 10.0f;
+    public float shakeAmount = 1.0f; //Cantidad de shake que se va a aplicar
+    public float shakeSpeed = 10.0f; //Velocidad del shake del texto
 
-    private TMP_Text textComponent;
-    private TMP_TextInfo textInfo;
-    private Vector3[][] originalVertices;
+    private TMP_Text textComponent; //Componente de texto que se va a modificar
+    private TMP_TextInfo textInfo; //Texto que se va a agregar
+    private Vector3[][] originalVertices; //Vértices de cada caracter
 
     void Awake()
     {

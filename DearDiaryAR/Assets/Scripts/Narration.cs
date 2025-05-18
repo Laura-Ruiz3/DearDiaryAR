@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Narration : MonoBehaviour
 {
-    public TMP_Text textComponent;
-    public float typingSpeed = 0.05f;
-    public AudioClip typingSound;        
-    public float pitchVariation = 0.1f;  
+    public TMP_Text textComponent; //Componente de texto que se va a editar
+    public float typingSpeed = 0.05f; //Velocidad que aparecen los caracteres
+    public AudioClip typingSound; //Efecto de sonido por caracter
+    public float pitchVariation = 0.1f; //Variacipon en el sonido
 
-    private AudioSource audioSource;
-    private string fullText;
-    private string currentText = "";
+    private AudioSource audioSource; //Componente para reproducir audio
+    private string fullText; //Cadena de texto completa a mostrar
+    private string currentText = ""; //Texto actual en la caja de texto
 
     void Awake()
     {
@@ -26,6 +26,7 @@ public class Narration : MonoBehaviour
         StartCoroutine(TypeText());
     }
 
+    //Empieza a escribir el texto en la caja de texto
     IEnumerator TypeText()
     {
         foreach (char letter in fullText.ToCharArray())
