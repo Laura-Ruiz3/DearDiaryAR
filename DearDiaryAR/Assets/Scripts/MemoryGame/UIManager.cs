@@ -4,31 +4,21 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UIElements;
 
+//Muestra la interfaz gráfica del juego
 public class UIManager : MonoBehaviour
 {
-    //public TMP_Text livesText;
-    public GameObject livesBox;
-    public GameObject instructionsBox;
-    public GameObject gameOverPanel;
-    public GameObject winPanel;
-    public UnityEngine.UI.Button restartButton;
-    public UnityEngine.UI.Button continueButton;    
-    //public GameObject loseImagePanel;
-    //public float loseImageDuration = 2f; // tiempo que estará visible la imagen
-    //public AudioSource loseAudioSource;
-    //public AudioClip loseClip;
-
+    public GameObject livesBox; //Contiene los elementos gráficos para mostrar las vidas
+    public GameObject instructionsBox; //Contiene los elementos gráficos para mostrar las instrucciones
+    public GameObject gameOverPanel; //Pantalla de derrota
+    public GameObject winPanel; //Pantalla de victoria
+    public UnityEngine.UI.Button restartButton; //Botón de reinicio
+    public UnityEngine.UI.Button continueButton; //Botón para continuar
 
     private GameManager gameManager;
 
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
-        /*restartButton.onClick.AddListener(() =>
-        {
-            if (gameManager != null)
-                gameManager.RestartGame();
-        });*/
         restartButton.onClick.AddListener(OnRestartButtonPressed);        
         continueButton.onClick.AddListener(OnContinueButtonPressed);
 
@@ -36,12 +26,14 @@ public class UIManager : MonoBehaviour
         HideGameOverPanel();
     }
 
+    //Inicia el comportamiento de restart
     void OnRestartButtonPressed()
     {
         if (gameManager != null)
             RestartGame();
     }
 
+    //Actualiza en la textbox el número de vidas
     public void UpdateLives(int lives)
     {
         TMP_Text livesText = livesBox.GetComponentInChildren<TMP_Text>();
@@ -49,6 +41,7 @@ public class UIManager : MonoBehaviour
             livesText.text = "Vidas: " + lives;
     }
 
+    //Muestra la pantalla de derrota
     public void ShowGameOverPanel()
     {
         if (gameOverPanel != null)
@@ -59,20 +52,20 @@ public class UIManager : MonoBehaviour
             instructionsBox.gameObject.SetActive(false);
     }
 
+    //Oculta la pantalla de derrota
     public void HideGameOverPanel()
     {
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
     }
 
+    //Reinicia el juego
     public void RestartGame()
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        Debug.Log("Recargando escena");
         SceneManager.LoadScene("V5");
-
     }
 
+    //Muestra la pantalla de victoria
     public void ShowWinPanel()
     {
         if (winPanel != null)
@@ -83,15 +76,16 @@ public class UIManager : MonoBehaviour
             instructionsBox.gameObject.SetActive(false);
     }
 
+    //Oculta la pantalla de victoria
     public void HideWinPanel()
     {
         if (winPanel != null)
             winPanel.SetActive(false);
     }
 
+    //Avanza a la siguiente escena
     void OnContinueButtonPressed()
     {
-        // Carga la siguiente escena, por ejemplo:
         UnityEngine.SceneManagement.SceneManager.LoadScene("V6.5");
     }
 }

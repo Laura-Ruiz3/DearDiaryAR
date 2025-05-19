@@ -4,37 +4,42 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Vuforia;
 
+//Se encarga de toda la lógica del juego (ejecución y condiciones de victoria y derrota)
 public class ShuffleGameManager : MonoBehaviour
 {
+    //Cantidad de vidas
     public int maxLives = 3;
     private int currentLives;
 
+    //Llamada a interfaz gráfica
     public ShuffleUIManager uiManager;
 
+    //Vasos seleccionados
     private Cup selectedCup = null;
     private bool canSelect = true;
 
+    //Marcador a detectar
     public GameObject marcador;
 
+    //Audio del juego
     public AudioSource musicSource;    
     public AudioClip lowLivesClip;
     public AudioClip loseClip;
     public AudioClip winClip;
-
     private AudioClip currentClip;
 
+    //Vasos y pelota para el juego
     public Cup[] cups;
     public GameObject ball;
 
     private int ballIndex;
 
-    private const float cupLiftDuration = 0.7f; // Pon el mismo valor que en CupAR
+    private const float cupLiftDuration = 0.7f; // Duración de la animación del vaso
     private Vector3 selectedCupOriginalLocalPosition;
 
     void Start()
     {
         currentLives = maxLives;
-        //uiManager.UpdateLives(currentLives);
         uiManager.HideGameOverPanel();
         if (marcador != null && !marcador.activeSelf)
             marcador.SetActive(true);
@@ -42,7 +47,6 @@ public class ShuffleGameManager : MonoBehaviour
         {
             musicSource.clip = lowLivesClip;
             musicSource.Play();
-            Debug.Log("Debería sonar el audio inicial");
         }
         SetupGame();
     }
@@ -50,14 +54,6 @@ public class ShuffleGameManager : MonoBehaviour
     void Update()
     {
         if (!canSelect) return;
-
-#if UNITY_EDITOR
-        if (Input.GetMouseButtonDown(0))
-        {
-            DetectTouch(Input.mousePosition);
-        }
-#endif
-
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             DetectTouch(Input.GetTouch(0).position);
@@ -66,17 +62,6 @@ public class ShuffleGameManager : MonoBehaviour
 
     void DetectTouch(Vector2 screenPos)
     {
-#if UNITY_EDITOR
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-#else
-        if (EventSystem.current != null && Input.touchCount > 0)
-        {
-            int fingerId = Input.GetTouch(0).fingerId;
-            if (EventSystem.current.IsPointerOverGameObject(fingerId))
-                return;
-        }
-#endif
         Camera arCamera = Camera.main;
         if (arCamera == null)
         {
@@ -103,42 +88,39 @@ public class ShuffleGameManager : MonoBehaviour
         }
     }
 
+    //Inicia el minijuego de encontrar la pelota. Coloca los vasos y mezcla la pelota.
     void SetupGame()
     {
         ArrangeCups();
 
-        // Mezcla y coloca la pelota
         ballIndex = UnityEngine.Random.Range(0, cups.Length);
         for (int i = 0; i < cups.Length; i++)
         {
             cups[i].Setup(this);
-            //cups[i].ResetCup();
         }
-        //ball.transform.position = cups[ballIndex].transform.position + new Vector3(0, -0.08f, 0);
 
         ball.SetActive(false);
 
-        Debug.Log("==== NUEVO JUEGO DE ENCONTRAR LA PELOTA ====");
-        Debug.Log($"La pelota está bajo el vaso {ballIndex}");
         canSelect = true;
         selectedCup = null;
     }
 
+    //Comportamiento cuando se selecciona un vaso
     public void OnCupSelected(Cup cup)
     {
         if (!canSelect || cup == selectedCup)
             return;
 
         selectedCup = cup;
-        // Guarda la posición original ANTES de animar el vaso
         selectedCupOriginalLocalPosition = cup.transform.localPosition;
         canSelect = false;
         StartCoroutine(CheckCup());
     }
 
+    //Mezcla los vasos
     private void ArrangeCups()
     {
-        float separation = 0.15f; // Ajusta este valor a tu gusto
+        float separation = 0.15f;
         int numCups = cups.Length;
 
         float startX = -separation * (numCups - 1) / 2f;
@@ -152,6 +134,9 @@ public class ShuffleGameManager : MonoBehaviour
 
     }
 
+    /*Verifica si la bola está debajo del vaso.
+     * Si se encuentra la pelota, va a condición de derrota.
+     * Si no se encuentra, va a condición de victoria*/
     private IEnumerator CheckCup()
     {
         selectedCup.AnimateLift();
@@ -161,27 +146,13 @@ public class ShuffleGameManager : MonoBehaviour
 
         if (cupIndex == ballIndex)
         {
-            // ======= POSICIONA LA PELOTA JUSTO DEBAJO DEL VASO ========
-            //float cupHeight = cups[cupIndex].GetComponent<Renderer>().bounds.size.y;
-            //float ballHeight = ball.GetComponent<Renderer>().bounds.size.y;
             Vector3 cupPos = cups[cupIndex].transform.position;
             float gap = 0.03f;
             float cupHeight = cups[cupIndex].GetComponent<Renderer>().bounds.size.y;
             float ballHeight = ball.GetComponent<Renderer>().bounds.size.y;
             Vector3 cupLocalPos = cups[cupIndex].transform.localPosition;
-            /*ball.transform.localPosition = new Vector3(
-                cupLocalPos.x,
-                cupLocalPos.y - (cupHeight / 2) - (ballHeight / 2) - gap,
-                cupLocalPos.z
-            );*/
-
             ball.transform.localPosition = selectedCupOriginalLocalPosition;
             ball.SetActive(true);
-            // =========================================================
-
-            Debug.Log($"¡Acierto! La pelota estaba en el vaso {cupIndex}");
-
-            // Espera 1 segundo mostrando la pelota
             yield return new WaitForSeconds(1f);
 
             ball.SetActive(false);
@@ -189,12 +160,7 @@ public class ShuffleGameManager : MonoBehaviour
         }
         else
         {
-            // Ganó
             currentLives--;
-            //uiManager.UpdateLives(currentLives);
-
-            Debug.Log($"Error. La pelota estaba en el vaso {ballIndex}, se eligió el vaso {cupIndex}");
-            //UpdateSoundtrack(currentLives);
 
             yield return new WaitForSeconds(1f);
 
@@ -205,38 +171,13 @@ public class ShuffleGameManager : MonoBehaviour
             }
             else
             {
-                // Permitir siguiente intento
                 selectedCup = null;
                 canSelect = true;
             }
         }
     }
 
-
-    //public void UpdateSoundtrack(int lives)
-    //{
-    //    AudioClip clipToPlay = null;
-
-    //    if (lives >= 3)
-    //        clipToPlay = fullLivesClip;
-    //    else if (lives >= 2)
-    //        clipToPlay = mediumLivesClip;
-    //    else
-    //        clipToPlay = lowLivesClip;
-
-    //    if (musicSource != null && clipToPlay != null && musicSource.clip != clipToPlay)
-    //    {
-    //        musicSource.clip = clipToPlay;
-    //        musicSource.Play();
-    //        currentClip = clipToPlay;
-    //        Debug.Log($"Cambiando soundtrack: {clipToPlay.name}");
-    //    }
-    //    else if (clipToPlay != null)
-    //    {
-    //        Debug.Log($"No se cambia soundtrack, ya está sonando: {clipToPlay.name}");
-    //    }
-    //}
-
+    //Condición de victoria
     private void Victory()
     {
         canSelect = false;
@@ -246,12 +187,12 @@ public class ShuffleGameManager : MonoBehaviour
         uiManager.ShowWinPanel();
     }
 
+    //Condición de derrota
     private void GameOver()
     {
         if (loseClip != null && loseClip != null)
         {
             musicSource.clip = loseClip;
-            //musicSource.PlayDelayed(3.0f);
             musicSource.Play();
         }
         
@@ -261,15 +202,14 @@ public class ShuffleGameManager : MonoBehaviour
             marcador.SetActive(false);
     }
 
+    //Reinicio del juego
     public void RestartGame()
     {
         currentLives = maxLives;
-        //uiManager.UpdateLives(currentLives);
         uiManager.HideGameOverPanel();
         if (marcador != null && !marcador.activeSelf)
             marcador.SetActive(true);
         canSelect = true;
         SetupGame();
-        //UpdateSoundtrack(currentLives);
     }
 }

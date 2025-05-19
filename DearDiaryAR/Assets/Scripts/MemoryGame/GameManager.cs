@@ -3,19 +3,25 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Vuforia;
 
+//Se encarga de toda la lógica del juego (ejecución y condiciones de victoria y derrota)
 public class GameManager : MonoBehaviour
 {
-    public int maxLives = 3;
+    //Cantidad de vidas
+    public int maxLives = 5;
     private int currentLives;
 
+    //Llamada a interfaz gráfica
     public UIManager uiManager;
 
+    //Cartas seleccionadas
     private Card firstSelectedCard = null;
     private Card secondSelectedCard = null;
     private bool canSelect = true;
 
+    //Marcador a detectar
     public GameObject marcador;
 
+    //Audio del juego
     public AudioSource musicSource;
     public AudioClip fullLivesClip;
     public AudioClip mediumLivesClip;
@@ -23,25 +29,15 @@ public class GameManager : MonoBehaviour
     public AudioClip loseClip;
     public AudioClip winClip;
 
-    //public GameObject loseImagePanel;
-    //public float loseImageDuration = 2f; // tiempo que estará visible la imagen
-
+    //Modelo animado mostrado en condicipon de derrota
     public GameObject loseModel;
     public Animator loseAnimator;
-    public string loseAnimationName = "Lose"; // El nombre de la animación en tu Animator
+    public string loseAnimationName = "Lose";
     public AudioSource loseAudioSource;
-    //public AudioClip loseClip;
-    public float loseAnimationDuration = 10f; // Duración real de tu animación
+    public float loseAnimationDuration = 10f;
 
-    public GameObject specialModel; // El modelo que vas a mover
+    public GameObject specialModel;
 
-    // Define las posiciones para cada estado
-    public Vector3 positionThreeLives = new Vector3(0, 0, 0);    // Posición cuando tiene 3 vidas
-    public Vector3 positionOneLife = new Vector3(1, 0, 0);    // Posición cuando tiene 1 vida
-    public Vector3 positionLose = new Vector3(0, 0, 1);    // Posición cuando pierde
-
-
-    // Opcional: para evitar que la música reinicie al cambiar a la misma
     private AudioClip currentClip;
 
     void Start()
@@ -55,20 +51,12 @@ public class GameManager : MonoBehaviour
         {
             musicSource.clip = fullLivesClip;
             musicSource.Play();
-            Debug.Log("Debería sonar el audio inicial");
         }
     }
 
     void Update()
     {
-        if (!canSelect) return; // <-- AGREGADO: bloquea input si está false
-
-#if UNITY_EDITOR
-        if (Input.GetMouseButtonDown(0))
-        {
-            DetectTouch(Input.mousePosition);
-        }
-#endif
+        if (!canSelect) return; 
 
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
@@ -76,78 +64,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //void DetectTouch(Vector2 screenPos)
-    //{
-    //    Camera arCamera = Camera.main;
-    //    if (arCamera == null)
-    //    {
-    //        Debug.LogWarning("No se encontró la cámara principal para el Raycast.");
-    //        return;
-    //    }
 
-    //    Ray ray = arCamera.ScreenPointToRay(screenPos);
-    //    RaycastHit hit;
-    //    if (Physics.Raycast(ray, out hit, 100f))
-    //    {
-    //        Debug.Log($"TOUCH! Raycast hit: {hit.collider.name}");
-
-    //        Card card = hit.collider.GetComponentInParent<Card>();
-    //        if (card != null)
-    //        {
-    //            Debug.Log("Llamando a onSelected");
-    //            card.OnSelected();
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("Raycast no tocó nada.");
-    //    }
-    //}    
-
-void DetectTouch(Vector2 screenPos)
-{
-    // ---- BLOQUEO DE RAYCAST SI ES SOBRE UI ----
-#if UNITY_EDITOR
-    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-        return;
-#else
-    if (EventSystem.current != null && Input.touchCount > 0)
-    {
-        int fingerId = Input.GetTouch(0).fingerId;
-        if (EventSystem.current.IsPointerOverGameObject(fingerId))
-            return;
-    }
-#endif
-    // ---- FIN BLOQUEO DE RAYCAST SI ES SOBRE UI ----
-
-    Camera arCamera = Camera.main;
-    if (arCamera == null)
-    {
-        Debug.LogWarning("No se encontró la cámara principal para el Raycast.");
-        return;
-    }
-
-    Ray ray = arCamera.ScreenPointToRay(screenPos);
-    RaycastHit hit;
-    if (Physics.Raycast(ray, out hit, 100f))
-    {
-        Debug.Log($"TOUCH! Raycast hit: {hit.collider.name}");
-
-        Card card = hit.collider.GetComponentInParent<Card>();
-        if (card != null)
+    //Función que ayuda a que se detecte el toque en pantalla a las cartas
+    void DetectTouch(Vector2 screenPos)
+    {    
+        Camera arCamera = Camera.main;
+        if (arCamera == null)
         {
-            Debug.Log("Llamando a onSelected");
-            card.OnSelected();
+            Debug.LogWarning("No se encontró la cámara principal para el Raycast.");
+            return;
+        }
+    
+        Ray ray = arCamera.ScreenPointToRay(screenPos);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 100f))
+        {    
+            Card card = hit.collider.GetComponentInParent<Card>();
+            if (card != null)
+            {
+                card.OnSelected();
+            }
+        }
+        else
+        {
+            Debug.Log("Raycast no tocó nada.");
         }
     }
-    else
-    {
-        Debug.Log("Raycast no tocó nada.");
-    }
-}
-
-
-public void OnCardSelected(Card card)
+    
+    /*Acciones a realizar cuando se selecciona un par de cartas
+     * Args:
+     *  card: carta que se ha seleccionado         
+     */
+    public void OnCardSelected(Card card)
     {
         if (!canSelect || card == firstSelectedCard || card == secondSelectedCard)
             return;
@@ -164,6 +112,7 @@ public void OnCardSelected(Card card)
         }
     }
 
+    //Comprueba si se ha formado un par
     private IEnumerator CheckMatch()
     {
         yield return new WaitForSeconds(1f);
@@ -186,9 +135,6 @@ public void OnCardSelected(Card card)
 
             UpdateSoundtrack(currentLives);
 
-            //StartCoroutine(firstSelectedCard.Unflip());
-            //StartCoroutine(secondSelectedCard.Unflip());
-
             yield return StartCoroutine(firstSelectedCard.Unflip());
             yield return StartCoroutine(secondSelectedCard.Unflip());
 
@@ -205,6 +151,10 @@ public void OnCardSelected(Card card)
         canSelect = true;
     }
 
+    /*Actualiza la cantidad de vidas si no se ha formado un par
+     * Args:
+     *  lives: cantidad de vidas actuales
+     */
     public void UpdateLives(int lives)
     {
         if (uiManager != null)
@@ -214,12 +164,10 @@ public void OnCardSelected(Card card)
         {
             if (lives == 3)
             {
-                specialModel.transform.localPosition = positionThreeLives;
                 specialModel.SetActive(true); // por si quieres mostrarlo solo en estos casos
             }
             else if (lives == 1)
             {
-                specialModel.transform.localPosition = positionOneLife;
                 specialModel.SetActive(true);
             }
             else
@@ -231,6 +179,10 @@ public void OnCardSelected(Card card)
         UpdateSoundtrack(lives);
     }
 
+    /*Actualiza el soundtrack en función de las vidas actuales
+     * Args:
+     *  lives: cantidad de vidas actuales
+     */
     public void UpdateSoundtrack(int lives)
     {
         AudioClip clipToPlay = null;
@@ -256,18 +208,24 @@ public void OnCardSelected(Card card)
         }
     }
 
-
+    /*Actualiza la cantidad de vidas si no se ha formado un par
+     * Args:
+     *  lives: cantidad de vidas actuales
+     * Returns:
+     *  bool: si se han encontrado todos los pares
+     */
     private bool AllCardsMatched()
     {
         Card[] allCards = FindObjectsOfType<Card>();
         foreach (var card in allCards)
         {
-            if (!card.IsMatched) // Puedes agregar la propiedad IsMatched
+            if (!card.IsMatched)
                 return false;
         }
         return true;
     }
 
+    //Se activa la condición de victoria
     private void Victory()
     {
         canSelect = false;
@@ -275,15 +233,8 @@ public void OnCardSelected(Card card)
         musicSource.Play();
         uiManager.ShowWinPanel();
     }
-
-    //private void GameOver()
-    //{
-    //    canSelect = false;
-    //    uiManager.ShowGameOverPanel();
-
-    //    marcador.SetActive(false);
-    //}
-
+    
+    //Se activa la condición de derrota
     private void GameOver()
     {
         canSelect = false;
@@ -291,67 +242,42 @@ public void OnCardSelected(Card card)
         StartCoroutine(LoseSequence());
     }
 
-    //private IEnumerator LoseSequence()
-    //{
-    //    // 1. Muestra imagen de derrota
-    //    if (loseImagePanel != null)
-    //        loseImagePanel.SetActive(true);
-
-    //    // 2. Reproduce el audio de derrota
-    //    if (musicSource != null && loseClip != null)
-    //    {
-    //        musicSource.clip = loseClip;
-    //        musicSource.Play();
-    //    }
-
-    //    // 3. Espera N segundos
-    //    yield return new WaitForSeconds(loseImageDuration);
-
-    //    // 4. Oculta la imagen de derrota
-    //    if (loseImagePanel != null)
-    //        loseImagePanel.SetActive(false);
-
-    //    // 5. Muestra pantalla de Game Over
-    //    if (uiManager != null)
-    //        uiManager.ShowGameOverPanel();
-    //}
-
+    //Ejecuta la secuencia de ostrar la animación y la interfaz gráfica cuando se pierde
     private IEnumerator LoseSequence()
     {
         if (specialModel != null)
         {
-            specialModel.transform.localPosition = positionLose;
             specialModel.SetActive(true);
         }
 
-        // 1. Activa el modelo 3D
+        //Activa el modelo 3D
         if (loseModel != null)
             loseModel.SetActive(true);
 
-        // 2. Ejecuta la animación
+        //Ejecuta la animación
         if (loseAnimator != null && !string.IsNullOrEmpty(loseAnimationName))
             loseAnimator.Play(loseAnimationName);
 
-        // 3. Reproduce el audio de derrota
+        //Reproduce el audio de derrota
         if (loseAudioSource != null && loseClip != null)
         {
             musicSource.clip = loseClip;
             loseAudioSource.PlayDelayed(3.0f);
         }
 
-        // 4. Espera a que termine la animación
+        //Espera a que termine la animación
         yield return new WaitForSeconds(3.0f);
 
-        // 5. Desactiva el modelo
+        //Desactiva el modelo
         if (loseModel != null)
             loseModel.SetActive(false);
 
-        // 6. Muestra Game Over panel
+        //Muestra la pantalla de Game Over
         if (uiManager != null)
             uiManager.ShowGameOverPanel();
     }
 
-
+    //Indica el comportamiento para reiniciar el juego
     public void RestartGame()
     {
         currentLives = maxLives;
@@ -363,8 +289,6 @@ public void OnCardSelected(Card card)
         foreach (var card in allCards)
         {
             card.StartCoroutine(card.Unflip());
-            // Reset matched state (opcional si quieres reutilizar las cartas)
-            // card.isMatched = false;
         }
     }
 }

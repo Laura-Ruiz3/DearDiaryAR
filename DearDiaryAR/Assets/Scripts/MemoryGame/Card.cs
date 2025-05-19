@@ -6,7 +6,6 @@ public class Card : MonoBehaviour
     public int cardId;
     public Material frontMaterial;
     public Material backMaterial;
-    //public MeshRenderer meshRenderer;
     public MeshRenderer frontRenderer;
     public MeshRenderer backRenderer;
 
@@ -22,15 +21,13 @@ public class Card : MonoBehaviour
     {
         backRenderer.material = backMaterial;
         transform.rotation = Quaternion.Euler(-90, 0, 0);
-
-        //transform.localRotation = Quaternion.identity;
-
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = FindAnyObjectByType<GameManager>();
     }
 
+    //Detecta cuando la carta ha sido seleccionada
     public void OnSelected()
     {
-        Debug.Log($"Carta tocada: {gameObject.name} | ID: {cardId}");
+        Debug.Log($"Carta seleccionada: {gameObject.name} | Par: {cardId}");
 
         if (isAnimating || isMatched || isFlipped) return;
 
@@ -39,6 +36,7 @@ public class Card : MonoBehaviour
             gameManager.OnCardSelected(this);
     }
 
+    //Realiza la animación de volteo de carts
     public IEnumerator FlipCard()
     {
         isAnimating = true;
@@ -69,11 +67,13 @@ public class Card : MonoBehaviour
         isAnimating = false;
     }
 
+    //Indica cuando dos cartas son par o se emparejaron
     public void SetMatched()
     {
         isMatched = true;
     }
 
+    //Voltea las cartas a su posición inicial en caso de que no sean par
     public IEnumerator Unflip()
     {
         if (isAnimating || !isFlipped) yield break;

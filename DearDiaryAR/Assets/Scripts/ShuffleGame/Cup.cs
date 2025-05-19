@@ -1,17 +1,19 @@
 using UnityEngine;
 
+//Comportamiento de los vasos en el juego
 public class Cup : MonoBehaviour
 {
     private ShuffleGameManager gameManager;
     private Vector3 initialPosition;
-    private bool isLifted = false;
+    private bool isLifted = false; //Si se ha levantado el vaso
 
+    //Animación del vaso
     private float raiseHeight = 0.15f;
     private float animationDuration = 0.7f;
 
+    //Posición inicial
     private Vector3 initialLocalPosition;
 
-    // Llamado por GameManagerAR al iniciar/reiniciar
     public void Setup(ShuffleGameManager manager)
     {
         gameManager = manager;
@@ -20,13 +22,14 @@ public class Cup : MonoBehaviour
         transform.localPosition = initialLocalPosition;
     }
 
-    // Animar levantamiento del vaso (coroutine para suavidad)
+    // Inicia la animación de levantamiento del vaso si se ha seleccionado
     public void AnimateLift()
     {
         if (!isLifted)
             StartCoroutine(RaiseCup());
     }
 
+    //Ejecuta la animación de levantar el vaso
     private System.Collections.IEnumerator RaiseCup()
     {
         isLifted = true;
@@ -40,7 +43,6 @@ public class Cup : MonoBehaviour
             yield return null;
         }
         transform.localPosition = targetPos;
-        Debug.Log($"{name}: Animación de levantamiento completada.");
     }
 
     // Regresa el vaso a su posición inicial para reiniciar el juego
@@ -49,6 +51,5 @@ public class Cup : MonoBehaviour
         StopAllCoroutines();
         transform.localPosition = initialPosition;
         isLifted = false;
-        Debug.Log($"{name}: ResetCup - Vaso en posición inicial.");
     }
 }
